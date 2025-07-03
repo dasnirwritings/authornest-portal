@@ -6,27 +6,27 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 export default function Dashboard() {
-  const { userProfile, loading } = useUser();
+  const userContext = useUser();
   const router = useRouter();
 
-  // Simple greeting based on time of day
+  useEffect(() => {
+    if (userContext && !userContext.loading && !userContext.userProfile) {
+      router.push('/');
+    }
+  }, [userContext, router]);
+
+  if (!userContext || userContext.loading || !userContext.userProfile) {
+    return <div className="p-12">Loading...</div>;
+  }
+  
+  const { userProfile } = userContext;
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   };
-
-  // Protect the page from non-logged-in users
-  useEffect(() => {
-    if (!loading && !userProfile) {
-      router.push('/');
-    }
-  }, [userProfile, loading, router]);
-
-  if (loading || !userProfile) {
-    return <div className="p-12">Loading...</div>;
-  }
 
   return (
     <div className="p-4 sm:p-8 md:p-12">
@@ -49,7 +49,6 @@ export default function Dashboard() {
             </Button>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Manage Beta Readers</CardTitle>
@@ -61,7 +60,6 @@ export default function Dashboard() {
             </Button>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Plan Your Tasks</CardTitle>
