@@ -2,16 +2,31 @@ import { useUser } from '@/context/UserContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 export default function Dashboard() {
-  const { userProfile } = useUser();
+  const { userProfile, loading } = useUser();
+  const router = useRouter();
 
+  // Simple greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   };
+
+  // Protect the page from non-logged-in users
+  useEffect(() => {
+    if (!loading && !userProfile) {
+      router.push('/');
+    }
+  }, [userProfile, loading, router]);
+
+  if (loading || !userProfile) {
+    return <div className="p-12">Loading...</div>;
+  }
 
   return (
     <div className="p-4 sm:p-8 md:p-12">
