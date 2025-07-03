@@ -22,7 +22,9 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | null>(null);
 
-export function UserProvider({ children }) {
+// --- THIS IS THE FIX ---
+// We have explicitly defined the type for the 'children' prop here.
+export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
